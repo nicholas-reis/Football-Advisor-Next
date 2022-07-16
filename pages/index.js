@@ -11,7 +11,7 @@ export async function getStaticProps() {
     url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
     params: { date: matchDate },
     headers: {
-      'X-RapidAPI-Key': process.env.API_FOOTBALL,
+      'X-RapidAPI-Key': process.env.API_FOOTBALL_KEY,
       'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com',
     },
   };
@@ -24,12 +24,9 @@ export async function getStaticProps() {
 }
 
 export default function Home( { options } ) {
-
   const axios = require('axios');
   const matchDate = '2022-07-14';
   
-  console.log(process.env.API_FOOTBALL);
-
   const [loadingData, setLoadingData] = useState(true);
   const [footballData, setFootballData] = useState([]);
 
@@ -39,10 +36,10 @@ export default function Home( { options } ) {
         .request(options)
         // eslint-disable-next-line func-names
         .then(function(response) {
-          console.log(response.data);
+          console.log(response.data.response);
 
           // after fetching data store it in posts state
-          setFootballData(response.data);
+          setFootballData(response.data.response);
 
           // loading is done
           setLoadingData(false);
@@ -77,14 +74,24 @@ export default function Home( { options } ) {
           {loadingData ? (
             <p>Loading data...</p>
           ) : (
-            footballData.response.map(myItem => (
+            footballData.map(myItem => (
               // eslint-disable-next-line react/jsx-key
               <div className={styles.fixture}>
                 <h2>
-                  <img src={myItem.teams.home.logo} width="100" />{' '}
+                  <Image 
+                    src={myItem.teams.home.logo}
+                    layout="fixed"
+                    height="100"
+                    width="100"
+                    alt='Home team logo'/>{' '}
                   {myItem.teams.home.name} {myItem.score.fulltime.home} x{' '}
                   {myItem.score.fulltime.away} {myItem.teams.away.name}{' '}
-                  <img src={myItem.teams.away.logo} width="100" />
+                  <Image 
+                    src={myItem.teams.away.logo}
+                    layout="fixed"
+                    height="100"
+                    width="100"
+                    alt='away team logo'/>
                 </h2>
                 <h3>
                   {myItem.fixture.venue.name} ({myItem.fixture.venue.city})
@@ -94,7 +101,12 @@ export default function Home( { options } ) {
                   {myItem.league.round}{' '}
                 </h4>
                 <div>
-                  <img src={myItem.league.logo} width="50" />
+                  <Image 
+                    src={myItem.league.logo}
+                    layout="fixed"
+                    height="50"
+                    width="50"
+                    alt='league logo'/>
                 </div>
               </div>
             ))

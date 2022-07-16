@@ -5,3 +5,10 @@ const nextConfig = {
 }
 
 module.exports = nextConfig
+
+// next.config.js
+module.exports = {
+  images: {
+    domains: ['media.api-sports.io'],
+  },
+}
