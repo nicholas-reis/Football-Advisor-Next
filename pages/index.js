@@ -2,60 +2,56 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import { useState, useEffect } from 'react';
+import fs from 'fs';
+import fetch from 'node-fetch';
+import path from 'path';
+
+function getDate(daysToAdd = 0) {
+  const today = new Date();
+  const date = new Date(today.setDate(today.getDate() + daysToAdd));
+
+  var dd = String(date.getDate()).padStart(2, '0');
+  var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+  var yyyy = date.getFullYear();
+
+  return yyyy + '-' + mm + '-' + dd;
+}
 
 export async function getStaticProps() {
-  const matchDate = '2022-07-14';
-    
+  const todayDate = getDate(0);
+  const yearFromTodayDate = getDate(365);
+
+  const url = 'https://api-football-v1.p.rapidapi.com/v3/fixtures?league=39&season=2022&from=' + todayDate + '&to=' + yearFromTodayDate;
+  console.log(url);
+
   const options = {
     method: 'GET',
-    url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
-    params: { date: matchDate },
     headers: {
       'X-RapidAPI-Key': process.env.API_FOOTBALL_KEY,
-      'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com',
+      'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com'
     },
   };
 
+  if (!fs.existsSync('data.json')) {  
+    await fetch(url, options)
+      .then(res => res.json())
+      .then(json => {
+        console.log("Writing to data file...");
+        fs.writeFileSync('data.json', JSON.stringify(json.response),'utf8');
+      })
+      .catch(err => console.error('error:' + err));
+  }
+
+  const footballData = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+
   return { 
     props: {
-      options,
+      footballData,
     },
   }
 }
 
-export default function Home( { options } ) {
-  const axios = require('axios');
-  const matchDate = '2022-07-14';
-  
-  const [loadingData, setLoadingData] = useState(true);
-  const [footballData, setFootballData] = useState([]);
-
-  useEffect(() => {
-    async function getData() {
-      await axios
-        .request(options)
-        // eslint-disable-next-line func-names
-        .then(function(response) {
-          console.log(response.data.response);
-
-          // after fetching data store it in posts state
-          setFootballData(response.data.response);
-
-          // loading is done
-          setLoadingData(false);
-        })
-        // eslint-disable-next-line func-names
-        .catch(function(axiosError) {
-          console.error(axiosError);
-        });
-    }
-    if (loadingData) {
-      // if the result is not ready so you make the axios call
-      getData();
-    }
-  }, []);
-
-
+export default function Home( { footballData } ) {
   return (
     <div className={styles.container}>
       <Head>
@@ -70,11 +66,8 @@ export default function Home( { options } ) {
         </h1>
 
         <div className={styles.grid}>
-        <h1 className={styles.fixture}>{matchDate}</h1>
-          {loadingData ? (
-            <p>Loading data...</p>
-          ) : (
-            footballData.map(myItem => (
+        <h1 className={styles.fixture}>{getDate(0)} to {getDate(365)}</h1>
+          { footballData.map(myItem => (
               // eslint-disable-next-line react/jsx-key
               <div className={styles.fixture}>
                 <h2>
@@ -84,7 +77,7 @@ export default function Home( { options } ) {
                     height="100"
                     width="100"
                     alt='Home team logo'/>{' '}
-                  {myItem.teams.home.name} {myItem.score.fulltime.home} x{' '}
+                  {myItem.teams.home.name} {myItem.score.fulltime.home} x {' '}
                   {myItem.score.fulltime.away} {myItem.teams.away.name}{' '}
                   <Image 
                     src={myItem.teams.away.logo}
@@ -93,13 +86,10 @@ export default function Home( { options } ) {
                     width="100"
                     alt='away team logo'/>
                 </h2>
+                <h3>{myItem.fixture.date}</h3>
                 <h3>
                   {myItem.fixture.venue.name} ({myItem.fixture.venue.city})
                 </h3>
-                <h4>
-                  {myItem.league.name} ({myItem.league.country}) -{' '}
-                  {myItem.league.round}{' '}
-                </h4>
                 <div>
                   <Image 
                     src={myItem.league.logo}
@@ -107,10 +97,14 @@ export default function Home( { options } ) {
                     height="50"
                     width="50"
                     alt='league logo'/>
+                    {myItem.league.name} ({myItem.league.country}) : {myItem.league.round}
                 </div>
+                <h4>
+                  
+                </h4>
               </div>
             ))
-          )}
+          }
         </div>
       </main>
 
