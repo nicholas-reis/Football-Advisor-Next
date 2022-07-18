@@ -20,8 +20,12 @@ function getDate(daysToAdd = 0) {
 export async function getStaticProps() {
   const todayDate = getDate(0);
   const yearFromTodayDate = getDate(365);
+  const league = '39';
+  const season = '2022';
+  const dataFolderName = 'data';
+  const dataFileName = './' + dataFolderName + '/data--league-' + league + '--season-' + season + '--from-' + todayDate + '--to-' + yearFromTodayDate + '.json';
 
-  const url = 'https://api-football-v1.p.rapidapi.com/v3/fixtures?league=39&season=2022&from=' + todayDate + '&to=' + yearFromTodayDate;
+  const url = 'https://api-football-v1.p.rapidapi.com/v3/fixtures?league=' + league + '&season=' + season + '&from=' + todayDate + '&to=' + yearFromTodayDate;
   console.log(url);
 
   const options = {
@@ -32,17 +36,21 @@ export async function getStaticProps() {
     },
   };
 
-  if (!fs.existsSync('data.json')) {  
+  if (!fs.existsSync(dataFileName)) {  
     await fetch(url, options)
       .then(res => res.json())
       .then(json => {
         console.log("Writing to data file...");
-        fs.writeFileSync('data.json', JSON.stringify(json.response),'utf8');
+        if (!fs.existsSync(dataFolderName)) {
+          fs.mkdirSync(dataFolderName);
+        }
+        fs.writeFileSync(dataFileName, JSON.stringify(json.response),'utf8');
+        console.log("Finished writing.");
       })
       .catch(err => console.error('error:' + err));
   }
 
-  const footballData = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+  const footballData = JSON.parse(fs.readFileSync(dataFileName, 'utf8'));
 
   return { 
     props: {
