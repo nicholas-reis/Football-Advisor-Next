@@ -5,30 +5,23 @@ import { useState, useEffect } from 'react';
 import fs from 'fs';
 import fetch from 'node-fetch';
 import path from 'path';
-import { SSRProvider, DateRangePicker, Provider, defaultTheme, useDateFormatter } from '@adobe/react-spectrum';
+import { 
+  SSRProvider, 
+  DateRangePicker, 
+  Provider, 
+  defaultTheme, 
+  useDateFormatter, 
+  Button } from '@adobe/react-spectrum';
 import { getLocalTimeZone, today } from '@internationalized/date';
+import { useRouter } from 'next/router';
 
-function getDate(daysToAdd = 0) {
-  const today = new Date();
-  const date = new Date(today.setDate(today.getDate() + daysToAdd));
-
-  var dd = String(date.getDate()).padStart(2, '0');
-  var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
-  var yyyy = date.getFullYear();
-
-  return yyyy + '-' + mm + '-' + dd;
-}
-
-export async function getServerSideProps() {
-  const todayDate = getDate(0);
-  const yearFromTodayDate = getDate(365);
+export async function getServerSideProps({ query: {startDate, endDate} }) {
   const league = '39';
   const season = '2022';
   const dataFolderName = 'data';
-  const dataFileName = './' + dataFolderName + '/data--league-' + league + '--season-' + season + '--from-' + todayDate + '--to-' + yearFromTodayDate + '.json';
+  const dataFileName = './' + dataFolderName + '/data--league-' + league + '--season-' + season + '--from-' + startDate + '--to-' + endDate + '.json';
 
-  const url = 'https://api-football-v1.p.rapidapi.com/v3/fixtures?league=' + league + '&season=' + season + '&from=' + todayDate + '&to=' + yearFromTodayDate;
-  console.log(url);
+  const url = 'https://api-football-v1.p.rapidapi.com/v3/fixtures?league=' + league + '&season=' + season + '&from=' + startDate + '&to=' + endDate;
 
   const options = {
     method: 'GET',
@@ -68,6 +61,8 @@ export default function Home( { footballData } ) {
   });
   let formatter = useDateFormatter({ dateStyle: 'long' });
 
+  const router = useRouter();
+
   return (
     <SSRProvider>
       <Provider theme={defaultTheme}>
@@ -84,17 +79,21 @@ export default function Home( { footballData } ) {
           </h1>
 
           <div className={styles.grid}>
-              <div>
-              <DateRangePicker label="Date range" value={range} onChange={setRange} />
-                <p>
-                  Selected date:{' '}
-                  {formatter.formatRange(
-                    range.start.toDate(getLocalTimeZone()),
-                    range.end.toDate(getLocalTimeZone())
-                  )}
-                </p>
-              </div>
-          <h1 className={styles.fixture}>{getDate(0)} to {getDate(365)}</h1>
+            <div>
+            <DateRangePicker label="Date range" value={range} onChange={setRange} />
+              <p>
+                Selected date:{' '}
+                {formatter.formatRange(
+                  range.start.toDate(getLocalTimeZone()),
+                  range.end.toDate(getLocalTimeZone())
+                )}
+              </p>
+            </div>
+            
+            <Button variant="cta" onPress={() => { 
+              router.push(`/?startDate=${range.start.toString()}&endDate=${range.end.toString()}`) 
+              }}>Submit</Button>
+
             { footballData.map(myItem => (
                 // eslint-disable-next-line react/jsx-key
                 <div className={styles.fixture}>
