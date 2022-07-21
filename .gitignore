@@ -32,4 +32,4 @@ yarn-error.log*
 .vercel
 
 # data files
-/data/data--*
+/data
