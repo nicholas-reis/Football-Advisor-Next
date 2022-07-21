@@ -37,6 +37,7 @@ export async function getServerSideProps({ query: {startDate = today(), endDate 
       .then(json => {
         console.log("Writing to data file...");
         if (!fs.existsSync(dataFolderName)) {
+          console.log('creating data folder: ' + dataFolderName);
           fs.mkdirSync(dataFolderName);
         }
         fs.writeFileSync(dataFileName, JSON.stringify(json.response),'utf8');
