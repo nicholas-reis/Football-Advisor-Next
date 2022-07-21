@@ -12,10 +12,10 @@ import {
   defaultTheme, 
   useDateFormatter, 
   Button } from '@adobe/react-spectrum';
-import { getLocalTimeZone, today } from '@internationalized/date';
+import { today } from '@internationalized/date';
 import { useRouter } from 'next/router';
 
-export async function getServerSideProps({ query: {startDate, endDate} }) {
+export async function getServerSideProps({ query: {startDate = today(), endDate = today().add({ weeks: 1 })} }) {
   const league = '39';
   const season = '2022';
   const dataFolderName = 'data';
@@ -56,8 +56,8 @@ export async function getServerSideProps({ query: {startDate, endDate} }) {
 
 export default function Home( { footballData } ) {
   let [range, setRange] = useState({
-    start: today(getLocalTimeZone()),
-    end: today(getLocalTimeZone()).add({ weeks: 1 })
+    start: today(),
+    end: today().add({ weeks: 1 })
   });
   let formatter = useDateFormatter({ dateStyle: 'long' });
 
@@ -81,13 +81,6 @@ export default function Home( { footballData } ) {
           <div className={styles.grid}>
             <div>
             <DateRangePicker label="Date range" value={range} onChange={setRange} />
-              <p>
-                Selected date:{' '}
-                {formatter.formatRange(
-                  range.start.toDate(getLocalTimeZone()),
-                  range.end.toDate(getLocalTimeZone())
-                )}
-              </p>
             </div>
             
             <Button variant="cta" onPress={() => { 
