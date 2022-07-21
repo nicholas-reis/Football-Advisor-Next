@@ -19,7 +19,7 @@ export async function getServerSideProps({ query: {startDate = today(), endDate 
   const league = '39';
   const season = '2022';
   const dataFolderName = 'data';
-  const dataFileName = './' + dataFolderName + '/data--league-' + league + '--season-' + season + '--from-' + startDate + '--to-' + endDate + '.json';
+  const dataFileName = 'data--league-' + league + '--season-' + season + '--from-' + startDate + '--to-' + endDate + '.json';
 
   const url = 'https://api-football-v1.p.rapidapi.com/v3/fixtures?league=' + league + '&season=' + season + '&from=' + startDate + '&to=' + endDate;
 
@@ -36,10 +36,12 @@ export async function getServerSideProps({ query: {startDate = today(), endDate 
       .then(res => res.json())
       .then(json => {
         console.log("Writing to data file...");
+        /*
         if (!fs.existsSync(dataFolderName)) {
           console.log('creating data folder: ' + dataFolderName);
           fs.mkdirSync(dataFolderName);
         }
+        */
         fs.writeFileSync(dataFileName, JSON.stringify(json.response),'utf8');
         console.log("Finished writing.");
       })
