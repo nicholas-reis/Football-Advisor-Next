@@ -122,3 +122,15 @@
   padding: 10px;
   text-align: center;
 }
+
+.selections {
+  margin: 5px;
+  width: 900px;
+  padding: 10px;
+  text-align: center;
+  display: block;
+}
+
+.dateRangePicker {
+  margin: 20px;
+}
