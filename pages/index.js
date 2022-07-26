@@ -14,6 +14,7 @@ import {
 import { today } from "@internationalized/date";
 import { useRouter } from "next/router";
 import clientPromise from "../mongodb";
+import { OptionsPicker } from "../components/OptionsPicker";
 
 export async function getServerSideProps({
   query: { startDate = today(), endDate = today().add({ weeks: 20 }) }
@@ -89,7 +90,6 @@ export default function Home({ footballData }) {
     start: today(),
     end: today().add({ weeks: 4 })
   });
-  let formatter = useDateFormatter({ dateStyle: "long" });
 
   const router = useRouter();
   return (
@@ -106,27 +106,8 @@ export default function Home({ footballData }) {
             <h1 className={styles.title}>Welcome to Football Advisor</h1>
 
             <div className={styles.grid}>
-              <div className={styles.selections}>
-                <div className={styles.dateRangePicker}>
-                  <DateRangePicker
-                    label="Date range"
-                    value={range}
-                    onChange={setRange}
-                  />
-                </div>
-                <div className={styles.dateRangePicker}>
-                  <Button
-                    variant="cta"
-                    onPress={() => {
-                      router.push(
-                        `/?startDate=${range.start.toString()}&endDate=${range.end.toString()}`
-                      );
-                    }}
-                  >
-                    Submit
-                  </Button>
-                </div>
-              </div>
+              <OptionsPicker range={range} setRange={setRange} router={router} />
+              
 
               {footballData.map((myItem) => (
                 // eslint-disable-next-line react/jsx-key
