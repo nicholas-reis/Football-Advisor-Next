@@ -12,34 +12,27 @@ import {
   Button
 } from "@adobe/react-spectrum";
 import { today } from "@internationalized/date";
-import { useRouter } from "next/router";
 import clientPromise from "../mongodb";
 import { OptionsPicker } from "../components/OptionsPicker";
 
 export async function getServerSideProps({
-  query: { startDate = today(), endDate = today().add({ weeks: 20 }) }
+  query: { startDate = today(), endDate = today().add({ weeks: 20 }), leagueArr = ["39"] }
 }) {
-  const league = "39";
+  
+  console.log(leagueArr);
+  if (typeof(leagueArr) === "string") {
+    leagueArr = leagueArr.split(",");
+  }
+  console.log(leagueArr);
+  const league = "41";
   const season = "2022";
-  const dataSetName =
-    "league-" +
-    league +
-    "--season-" +
-    season +
-    "--from-" +
-    startDate +
-    "--to-" +
-    endDate;
+  const leagueName = "league-" + league;
 
   const url =
     "https://api-football-v1.p.rapidapi.com/v3/fixtures?league=" +
     league +
     "&season=" +
-    season +
-    "&from=" +
-    startDate +
-    "&to=" +
-    endDate;
+    season;
 
   const options = {
     method: "GET",
@@ -53,17 +46,22 @@ export async function getServerSideProps({
   const db = client.db("football_advisor");
   const coll = await db.collection("fixtures");
 
-  if ((await coll.find({ dataSetName: dataSetName }).count()) === 0) {
+  if ((await coll.find({ leagueName: leagueName }).count()) === 0) {
     await fetch(url, options)
       .then((res) => res.json())
       .then((json) => {
         console.log("Updating Database...");
         console.log(json);
         const record = {
-          dataSetName: dataSetName,
+          leagueName: leagueName,
           dataSet: json.response
         };
-        coll.insert(record);
+        async function insert() {
+          if ((await coll.find({ leagueName: leagueName }).count()) === 0) {
+            await coll.insert(record);
+          }
+        }
+        insert();
         console.log("Updated.");
       })
       .catch((err) => console.error("error:" + err));
@@ -71,12 +69,15 @@ export async function getServerSideProps({
 
   const rawData = await db
     .collection("fixtures")
-    .find({ dataSetName: dataSetName })
+    .find({ leagueId: {$in: leagueArr} })
     .toArray();
 
-  console.log(rawData[0].dataSet);
+  let footballData = [];
+  for (let i = 0; i < rawData.length; i++) {
+    footballData = footballData.concat(rawData[i].dataSet);
+  }
 
-  const footballData = rawData[0].dataSet;
+  console.log(footballData);  
 
   return {
     props: {
@@ -86,12 +87,6 @@ export async function getServerSideProps({
 }
 
 export default function Home({ footballData }) {
-  let [range, setRange] = useState({
-    start: today(),
-    end: today().add({ weeks: 4 })
-  });
-
-  const router = useRouter();
   return (
     <SSRProvider>
       <Provider theme={defaultTheme}>
@@ -106,8 +101,7 @@ export default function Home({ footballData }) {
             <h1 className={styles.title}>Welcome to Football Advisor</h1>
 
             <div className={styles.grid}>
-              <OptionsPicker range={range} setRange={setRange} router={router} />
-              
+              <OptionsPicker/>
 
               {footballData.map((myItem) => (
                 // eslint-disable-next-line react/jsx-key
