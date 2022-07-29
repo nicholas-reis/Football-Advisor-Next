@@ -39,7 +39,7 @@ export const OptionsPicker = () => {
                             onChange={setRange}
                         />
                     </div>
-                    <div>
+                    <div className={styles.dateRangePicker}>
                         <MultiSelect
                             className="multi-select"
                             onChange={handleOnchange}
