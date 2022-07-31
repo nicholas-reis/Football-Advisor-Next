@@ -19,11 +19,9 @@ export async function getServerSideProps({
   query: { startDate = today(), endDate = today().add({ weeks: 20 }), leagueArr = ["39"] }
 }) {
   
-  console.log(leagueArr);
   if (typeof(leagueArr) === "string") {
     leagueArr = leagueArr.split(",");
   }
-  console.log(leagueArr);
   const league = "41";
   const season = "2022";
   const leagueName = "league-" + league;
@@ -73,12 +71,12 @@ export async function getServerSideProps({
     .toArray();
 
   let footballData = [];
-  let leagueStartDate = new Date("2022-12-01T00:00:00.000Z");
+  let leagueStartDate = new Date(startDate); 
+  let leagueEndDate = new Date(endDate);
   for (let i = 0; i < rawData.length; i++) {
     for (let j = 0; j < rawData[i].dataSet.length; j++) {
-      //console.log(rawData[i].dataSet[j].fixture.date);
       let tempDate = new Date(rawData[i].dataSet[j].fixture.date);
-      if (tempDate.getTime() > leagueStartDate.getTime())
+      if ((tempDate.getTime() >= leagueStartDate.getTime()) && (tempDate.getTime() <= leagueEndDate.getTime()))
         footballData.push(rawData[i].dataSet[j]);
     }
   }

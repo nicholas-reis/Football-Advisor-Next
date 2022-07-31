@@ -1,7 +1,9 @@
 import styles from "../styles/Home.module.css";
 import {
     DateRangePicker,
-    Button
+    Button,
+    Grid,
+    View
   } from "@adobe/react-spectrum";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
@@ -30,36 +32,46 @@ export const OptionsPicker = () => {
 
     return (
         <>
-            <div className={styles.selections}>
-                <div className={styles.dateRangePicker}>
-                    <div>
-                        <DateRangePicker
-                            label="Date range"
-                            value={range}
-                            onChange={setRange}
-                        />
-                    </div>
-                    <div className={styles.dateRangePicker}>
-                        <MultiSelect
-                            className="multi-select"
-                            onChange={handleOnchange}
-                            options={options}
-                        />
-                    </div>
-                    <div className={styles.dateRangePicker}>
-                        <Button
-                            variant="cta"
-                            onPress={() => {
-                            router.push(
-                                `/?startDate=${range.start.toString()}&endDate=${range.end.toString()}&leagueArr=${leagueArr}`
-                            );
-                            }}
-                            >
-                            Submit
-                        </Button>
-                    </div>
-                </div> 
-            </div>
+            <Grid
+                areas={[
+                    'dateRange leagueSelect',
+                    'button button'
+                ]}
+                columns={['2fr', '2fr']}
+                rows={['auto', 'auto']}
+                height="size-1500"
+                gap="size-250"
+                justifyItems="center"
+                margin="50px">
+                <View gridArea="dateRange">
+                    <DateRangePicker
+                        label="Trip Dates"
+                        value={range}
+                        onChange={setRange}
+                    />
+                </View>
+                <View gridArea="leagueSelect">
+                    <MultiSelect
+                        label="League Selector"
+                        className="multi-select"
+                        onChange={handleOnchange}
+                        options={options}
+                        defaultValue = '39'
+                    />
+                </View>
+                <View gridArea="button">
+                    <Button
+                        variant="cta"
+                        onPress={() => {
+                        router.push(
+                            `/?startDate=${range.start.toString()}&endDate=${range.end.toString()}&leagueArr=${leagueArr}`
+                        );
+                        }}
+                        >
+                        Submit
+                    </Button>
+                </View>
+            </Grid>
         </>
     )
 }
