@@ -1,25 +1,27 @@
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import { useState } from "react";
 import fetch from "node-fetch";
 import {
   SSRProvider,
-  DateRangePicker,
   Provider,
   defaultTheme,
-  useDateFormatter,
-  Button
+  Grid,
+  View,
+  repeat
 } from "@adobe/react-spectrum";
 import { today } from "@internationalized/date";
 import clientPromise from "../mongodb";
 import { OptionsPicker } from "../components/OptionsPicker";
 
 export async function getServerSideProps({
-  query: { startDate = today(), endDate = today().add({ weeks: 20 }), leagueArr = ["39"] }
+  query: {
+    startDate = today(),
+    endDate = today().add({ weeks: 20 }),
+    leagueArr = ["39"]
+  }
 }) {
-  
-  if (typeof(leagueArr) === "string") {
+  if (typeof leagueArr === "string") {
     leagueArr = leagueArr.split(",");
   }
   const league = "41";
@@ -67,16 +69,19 @@ export async function getServerSideProps({
 
   const rawData = await db
     .collection("fixtures")
-    .find({ leagueId: {$in: leagueArr} })
+    .find({ leagueId: { $in: leagueArr } })
     .toArray();
 
   let footballData = [];
-  let leagueStartDate = new Date(startDate); 
+  let leagueStartDate = new Date(startDate);
   let leagueEndDate = new Date(endDate);
   for (let i = 0; i < rawData.length; i++) {
     for (let j = 0; j < rawData[i].dataSet.length; j++) {
       let tempDate = new Date(rawData[i].dataSet[j].fixture.date);
-      if ((tempDate.getTime() >= leagueStartDate.getTime()) && (tempDate.getTime() <= leagueEndDate.getTime()))
+      if (
+        tempDate.getTime() >= leagueStartDate.getTime() &&
+        tempDate.getTime() <= leagueEndDate.getTime()
+      )
         footballData.push(rawData[i].dataSet[j]);
     }
   }
@@ -102,46 +107,88 @@ export default function Home({ footballData }) {
           <main className={styles.main}>
             <h1 className={styles.title}>Welcome to Football Advisor</h1>
 
-            <div className={styles.grid}>
-              <OptionsPicker/>
+            <div className={styles.pickerGrid}>
+              <OptionsPicker />
 
               {footballData.map((myItem) => (
                 // eslint-disable-next-line react/jsx-key
                 <div className={styles.fixture}>
-                  <h2>
-                    <Image
-                      src={myItem.teams.home.logo}
-                      layout="fixed"
-                      height="100"
-                      width="100"
-                      alt="Home team logo"
-                    />{" "}
-                    {myItem.teams.home.name} {myItem.score.fulltime.home} x{" "}
-                    {myItem.score.fulltime.away} {myItem.teams.away.name}{" "}
-                    <Image
-                      src={myItem.teams.away.logo}
-                      layout="fixed"
-                      height="100"
-                      width="100"
-                      alt="away team logo"
-                    />
-                  </h2>
-                  <h3>{myItem.fixture.date}</h3>
-                  <h3>
-                    {myItem.fixture.venue.name} ({myItem.fixture.venue.city})
-                  </h3>
-                  <div>
-                    <Image
-                      src={myItem.league.logo}
-                      layout="fixed"
-                      height="50"
-                      width="50"
-                      alt="league logo"
-                    />
-                    {myItem.league.name} ({myItem.league.country}) :{" "}
-                    {myItem.league.round}
-                  </div>
-                  <h4></h4>
+                  <Grid
+                    areas={[
+                      "homeLogo homeTeam versus awayTeam awayLogo fixtureDate venueName leagueLogo leagueName"
+                    ]}
+                    columns={[
+                      "1fr",
+                      "5fr",
+                      "1fr",
+                      "5fr",
+                      "1fr",
+                      "1fr",
+                      "5fr",
+                      "1fr",
+                      "5fr"
+                    ]}
+                    rows={repeat("auto")}
+                    gap="size-100"
+                  >
+                    <View gridArea="homeLogo">
+                      <Image
+                        src={myItem.teams.home.logo}
+                        layout="fixed"
+                        height="100"
+                        width="100"
+                        alt="Home team logo"
+                      />
+                    </View>
+
+                    <View gridArea="homeTeam">
+                      <h3>
+                        {myItem.teams.home.name} {myItem.score.fulltime.home}
+                      </h3>
+                    </View>
+
+                    <View gridArea="versus">
+                      <h3>vs</h3>
+                    </View>
+
+                    <View gridArea="awayTeam">
+                      <h3>
+                        {myItem.score.fulltime.away} {myItem.teams.away.name}
+                      </h3>
+                    </View>
+
+                    <View gridArea="awayLogo">
+                      <Image
+                        src={myItem.teams.away.logo}
+                        layout="fixed"
+                        height="100"
+                        width="100"
+                        alt="away team logo"
+                      />
+                    </View>
+
+                    <View gridArea="fixtureDate">{myItem.fixture.date}</View>
+
+                    <View gridArea="venueName">
+                      {myItem.fixture.venue.name}
+                      <br />({myItem.fixture.venue.city})
+                    </View>
+
+                    <View gridArea="leagueLogo">
+                      <Image
+                        src={myItem.league.logo}
+                        layout="fixed"
+                        height="50"
+                        width="50"
+                        alt="league logo"
+                      />
+                    </View>
+
+                    <View gridArea="leagueName">
+                      {myItem.league.name} ({myItem.league.country}) :{" "}
+                      {myItem.league.round}
+                    </View>
+                  </Grid>
                 </div>
               ))}
             </div>
