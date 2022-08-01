@@ -4,7 +4,7 @@
 
 .main {
   min-height: 100vh;
-  padding: 4rem 0;
+  padding: 2rem 0;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -41,8 +41,8 @@
 
 .title {
   margin: 0;
-  line-height: 1.15;
-  font-size: 4rem;
+  line-height: 1.2;
+  font-size: 2rem;
 }
 
 .title,
@@ -116,11 +116,12 @@
 }
 
 .fixture {
-  border: 2px dotted gray;
+  border: 1px dotted gray;
   margin: 10px;
   width: 900px;
-  padding: 10px;
+  padding: 15px;
   text-align: center;
+  min-width: 90%;
 }
 
 .selections {
@@ -135,5 +136,13 @@
 }
 
 .pickerGrid {
-  margin:20px;
+  border: 1px dotted gray;
+  margin: 10px;
+  min-width: 90%;
+}
+
+.optionsPicker {
+  border: 1px dotted blue;
+  margin: 1%;
+  width: 50%;
 }
