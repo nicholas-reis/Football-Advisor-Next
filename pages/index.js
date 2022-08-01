@@ -115,18 +115,17 @@ export default function Home({ footballData }) {
                 <div className={styles.fixture}>
                   <Grid
                     areas={[
-                      "homeLogo homeTeam versus awayTeam awayLogo fixtureDate venueName leagueLogo leagueName"
+                      "homeLogo homeTeam versus awayTeam awayLogo fixtureDate venueName leagueName"
                     ]}
                     columns={[
-                      "1fr",
-                      "5fr",
-                      "1fr",
-                      "5fr",
-                      "1fr",
-                      "1fr",
-                      "5fr",
-                      "1fr",
-                      "5fr"
+                      "0.5fr", // home team logo
+                      "1fr", // home team name
+                      "0.1fr", // vs
+                      "1fr", // away team name
+                      "0.5fr", // away team logo
+                      "1fr", // fixture date and time
+                      "1fr", // venue name
+                      "1fr" // league name
                     ]}
                     rows={repeat("auto")}
                     gap="size-100"
@@ -167,14 +166,19 @@ export default function Home({ footballData }) {
                       />
                     </View>
 
-                    <View gridArea="fixtureDate">{myItem.fixture.date}</View>
-
-                    <View gridArea="venueName">
-                      {myItem.fixture.venue.name}
-                      <br />({myItem.fixture.venue.city})
+                    <View gridArea="fixtureDate">
+                      {new Date(myItem.fixture.date).toString()}
+                      <br />
+                      <br />
+                      {myItem.league.round}
                     </View>
 
-                    <View gridArea="leagueLogo">
+                    <View gridArea="venueName">
+                      <h3>{myItem.fixture.venue.name}</h3>
+                      {myItem.fixture.venue.city}
+                    </View>
+
+                    <View gridArea="leagueName">
                       <Image
                         src={myItem.league.logo}
                         layout="fixed"
@@ -182,11 +186,8 @@ export default function Home({ footballData }) {
                         width="50"
                         alt="league logo"
                       />
-                    </View>
-
-                    <View gridArea="leagueName">
-                      {myItem.league.name} ({myItem.league.country}) :{" "}
-                      {myItem.league.round}
+                      <br />
+                      {myItem.league.name} ({myItem.league.country})
                     </View>
                   </Grid>
                 </div>
