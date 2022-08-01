@@ -14,6 +14,19 @@ import { today } from "@internationalized/date";
 import clientPromise from "../mongodb";
 import { OptionsPicker } from "../components/OptionsPicker";
 
+function sortDates(array, fixture, date) {
+  var low = 0,
+      high = array.length;
+
+  while (low < high) {
+      var mid = (low + high) >>> 1;
+      var tempDate = new Date(array[mid].fixture.date);
+      if (tempDate < date) low = mid + 1;
+      else high = mid;
+  }
+  array.splice(low, 0, fixture)
+}
+
 export async function getServerSideProps({
   query: {
     startDate = today(),
@@ -82,7 +95,7 @@ export async function getServerSideProps({
         tempDate.getTime() >= leagueStartDate.getTime() &&
         tempDate.getTime() <= leagueEndDate.getTime()
       )
-        footballData.push(rawData[i].dataSet[j]);
+        sortDates(footballData, rawData[i].dataSet[j], tempDate)
     }
   }
 
@@ -167,7 +180,7 @@ export default function Home({ footballData }) {
                     </View>
 
                     <View gridArea="fixtureDate">
-                      {new Date(myItem.fixture.date).toString()}
+                      {new Date(myItem.fixture.date).toLocaleString('en-GB', { timeZone: 'UTC' })}
                       <br />
                       <br />
                       {myItem.league.round}
