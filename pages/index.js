@@ -13,18 +13,19 @@ import {
 import { today } from "@internationalized/date";
 import clientPromise from "../mongodb";
 import { OptionsPicker } from "../components/OptionsPicker";
+import { timeZones } from "./utils.js";
 
 function sortDates(array, fixture, date) {
   var low = 0,
-      high = array.length;
+    high = array.length;
 
   while (low < high) {
-      var mid = (low + high) >>> 1;
-      var tempDate = new Date(array[mid].fixture.date);
-      if (tempDate < date) low = mid + 1;
-      else high = mid;
+    var mid = (low + high) >>> 1;
+    var tempDate = new Date(array[mid].fixture.date);
+    if (tempDate < date) low = mid + 1;
+    else high = mid;
   }
-  array.splice(low, 0, fixture)
+  array.splice(low, 0, fixture);
 }
 
 export async function getServerSideProps({
@@ -95,7 +96,7 @@ export async function getServerSideProps({
         tempDate.getTime() >= leagueStartDate.getTime() &&
         tempDate.getTime() <= leagueEndDate.getTime()
       )
-        sortDates(footballData, rawData[i].dataSet[j], tempDate)
+        sortDates(footballData, rawData[i].dataSet[j], tempDate);
     }
   }
 
@@ -180,7 +181,11 @@ export default function Home({ footballData }) {
                     </View>
 
                     <View gridArea="fixtureDate">
-                      {new Date(myItem.fixture.date).toLocaleString('en-GB', { timeZone: 'UTC' })}
+                      {new Date(myItem.fixture.date).toLocaleString("en-GB", {
+                        dateStyle: "full",
+                        timeStyle: "short",
+                        timeZone: timeZones[myItem.league.country] || "UTC"
+                      })}
                       <br />
                       <br />
                       {myItem.league.round}

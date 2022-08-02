@@ -8,10 +8,11 @@ import { today } from "@internationalized/date";
 
 export const OptionsPicker = () => {
   const options = [
-    { label: "Premier League", value: "39" },
-    { label: "Championship", value: "40" },
-    { label: "League 1", value: "41" },
-    { label: "League 2", value: "42" }
+    { label: "Premier League (England)", value: "39" },
+    { label: "Championship (England)", value: "40" },
+    { label: "League 1 (England)", value: "41" },
+    { label: "League 2 (England)", value: "42" },
+    { label: "League 1 (France)", value: "61" }
   ];
 
   let [range, setRange] = useState({
