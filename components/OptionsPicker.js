@@ -80,7 +80,7 @@ export const OptionsPicker = () => {
 
   let [range, setRange] = useState({
     start: today(),
-    end: today().add({ weeks: 4 })
+    end: today().add({ weeks: 2 })
   });
 
   const router = useRouter();

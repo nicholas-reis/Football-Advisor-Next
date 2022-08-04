@@ -14,6 +14,7 @@ import { today } from "@internationalized/date";
 import clientPromise from "../mongodb";
 import { OptionsPicker } from "../components/OptionsPicker";
 import { timeZones } from "./utils.js";
+import { FixtureTable } from "../components/FixtureTable";
 
 function sortDates(array, fixture, date) {
   var low = 0,
@@ -31,7 +32,7 @@ function sortDates(array, fixture, date) {
 export async function getServerSideProps({
   query: {
     startDate = today(),
-    endDate = today().add({ weeks: 20 }),
+    endDate = today().add({ weeks: 2 }),
     leagueArr = ["39"]
   }
 }) {
@@ -41,20 +42,6 @@ export async function getServerSideProps({
   const league = "41";
   const season = "2022";
   const leagueName = "league-" + league;
-
-  const url =
-    "https://api-football-v1.p.rapidapi.com/v3/fixtures?league=" +
-    league +
-    "&season=" +
-    season;
-
-  const options = {
-    method: "GET",
-    headers: {
-      "X-RapidAPI-Key": process.env.API_FOOTBALL_KEY,
-      "X-RapidAPI-Host": "api-football-v1.p.rapidapi.com"
-    }
-  };
 
   const client = await clientPromise;
   const db = client.db("football_advisor");
@@ -124,92 +111,8 @@ export default function Home({ footballData }) {
             <div className={styles.pickerGrid}>
               <OptionsPicker />
 
-              {footballData.map((myItem) => (
-                // eslint-disable-next-line react/jsx-key
-                <div className={styles.fixture}>
-                  <Grid
-                    areas={[
-                      "homeLogo homeTeam versus awayTeam awayLogo fixtureDate venueName leagueName"
-                    ]}
-                    columns={[
-                      "0.5fr", // home team logo
-                      "1fr", // home team name
-                      "0.1fr", // vs
-                      "1fr", // away team name
-                      "0.5fr", // away team logo
-                      "1fr", // fixture date and time
-                      "1fr", // venue name
-                      "1fr" // league name
-                    ]}
-                    rows={repeat("auto")}
-                    gap="size-100"
-                  >
-                    <View gridArea="homeLogo">
-                      <Image
-                        src={myItem.teams.home.logo}
-                        layout="fixed"
-                        height="100"
-                        width="100"
-                        alt="Home team logo"
-                      />
-                    </View>
+              <FixtureTable footballData={footballData}/>
 
-                    <View gridArea="homeTeam">
-                      <h3>
-                        {myItem.teams.home.name} {myItem.score.fulltime.home}
-                      </h3>
-                    </View>
-
-                    <View gridArea="versus">
-                      <h3>vs</h3>
-                    </View>
-
-                    <View gridArea="awayTeam">
-                      <h3>
-                        {myItem.score.fulltime.away} {myItem.teams.away.name}
-                      </h3>
-                    </View>
-
-                    <View gridArea="awayLogo">
-                      <Image
-                        src={myItem.teams.away.logo}
-                        layout="fixed"
-                        height="100"
-                        width="100"
-                        alt="away team logo"
-                      />
-                    </View>
-
-                    <View gridArea="fixtureDate">
-                      {new Date(myItem.fixture.date).toLocaleString("en-GB", {
-                        dateStyle: "full",
-                        timeStyle: "short",
-                        timeZone: timeZones[myItem.league.country] || "UTC"
-                      })}
-                      <br />
-                      <br />
-                      {myItem.league.round}
-                    </View>
-
-                    <View gridArea="venueName">
-                      <h3>{myItem.fixture.venue.name}</h3>
-                      {myItem.fixture.venue.city}
-                    </View>
-
-                    <View gridArea="leagueName">
-                      <Image
-                        src={myItem.league.logo}
-                        layout="fixed"
-                        height="50"
-                        width="50"
-                        alt="league logo"
-                      />
-                      <br />
-                      {myItem.league.name} ({myItem.league.country})
-                    </View>
-                  </Grid>
-                </div>
-              ))}
             </div>
           </main>
 
