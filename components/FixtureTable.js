@@ -7,7 +7,7 @@ import {
     Row,
     Cell
   } from "@adobe/react-spectrum";
-import { timeZones } from "../pages/utils.js";
+import { timeZones } from "./utils.js";
 
 export const FixtureTable = ( {footballData} ) => {
     let columns = [

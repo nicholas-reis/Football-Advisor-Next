@@ -13,7 +13,7 @@ import {
 import { today } from "@internationalized/date";
 import clientPromise from "../mongodb";
 import { OptionsPicker } from "../components/OptionsPicker";
-import { timeZones } from "./utils.js";
+import { timeZones } from "../components/utils.js";
 import { FixtureTable } from "../components/FixtureTable";
 
 function sortDates(array, fixture, date) {
