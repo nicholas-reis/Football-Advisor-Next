@@ -1,19 +1,11 @@
-import { React, useState } from "react";
-import { useAsyncList, useCollator } from '@adobe/react-spectrum';
+import { React, useEffect, useState } from "react";
 import {
-    SSRProvider,
-    Provider,
-    defaultTheme,
-    Grid,
-    View,
-    repeat,
     TableHeader,
     TableView,
     TableBody,
     Column,
     Row,
-    Cell,
-    ListBox
+    Cell
   } from "@adobe/react-spectrum";
 import { timeZones } from "../pages/utils.js";
 
@@ -24,7 +16,7 @@ export const FixtureTable = ( {footballData} ) => {
       { name: '', uid: 'vs', width: "5%", align: "center" },
       { name: 'Away Team', uid: 'awayteam', width: "10%", align: "center" },
       { name: '', uid: 'awaylogo', width: "5%", align: "center" },
-      { name: 'Date', uid: 'date', width: "15%", align: "center" },
+      { name: 'Date', uid: 'date', width: "17%", align: "center" },
       { name: 'Venue', uid: 'venue', width: "25%", align: "center" },
       { name: '', uid: 'leaguelogo', width: "5%", align: "center" },
       { name: 'League', uid: 'leaguename', width: "15%", align: "center" }
@@ -51,6 +43,17 @@ export const FixtureTable = ( {footballData} ) => {
     }
 
     let [selectedKeys, setSelectedKeys] = useState(new Set([]));
+    let [disabledFixtures, setDisabledFixtures] = useState([]);
+
+    const obj = {1: [3, 4, 5], 2: [6, 7, 8]}; // Replace with calculated disabled games
+
+    useEffect(() => {
+      let disable = [];
+      for (const element of selectedKeys) {
+        disable = disable.concat(obj[element]);
+      }
+      setDisabledFixtures(disable);
+    }, [selectedKeys]);
   
     return (
       <TableView
@@ -59,6 +62,9 @@ export const FixtureTable = ( {footballData} ) => {
         selectedKeys={selectedKeys}
         onSelectionChange={setSelectedKeys}
         density="spacious"
+        disabledKeys={disabledFixtures}
+        // onAction can be used to take the user to fixture-specific pages
+        // onAction={(key) => alert(`Opening item ${key}...`)}
       >
         <TableHeader columns={columns}>
           {(column) => (
