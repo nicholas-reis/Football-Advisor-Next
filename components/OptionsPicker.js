@@ -1,10 +1,10 @@
 import styles from "../styles/Home.module.css";
 import { DateRangePicker, Button, Grid, View } from "@adobe/react-spectrum";
-import MultiSelect from "react-multiple-select-dropdown-lite";
-import "react-multiple-select-dropdown-lite/dist/index.css";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { today } from "@internationalized/date";
+import Select from "react-select";
+import makeAnimated from 'react-select/animated';
 
 export const OptionsPicker = () => {
   const options = [
@@ -63,19 +63,27 @@ export const OptionsPicker = () => {
 
   const [leagueArr, setLeagueArr] = useState(["39"]);
 
-  const handleOnchange = (val) => setLeagueArr(val);
+  const handleOnchange = (val) => {
+    let arr = [];
+    val.map((obj) => {
+      arr.push(obj.value);
+    })
+    setLeagueArr(arr);
+  }
+
+  const animatedComponents = makeAnimated();
 
   return (
     <div className={styles.optionsPicker}>
       <Grid
         areas={["dateRange leagueSelect", "button button"]}
-        columns={["2fr", "2fr"]}
+        columns={["1fr", "1fr"]}
         rows={["auto", "auto"]}
         height="size-1500"
         gap="size-250"
         justifyItems="center"
         margin="50px"
-        width="50%"
+        width="90%"
       >
         <View gridArea="dateRange">
           <DateRangePicker
@@ -84,13 +92,15 @@ export const OptionsPicker = () => {
             onChange={setRange}
           />
         </View>
-        <View gridArea="leagueSelect">
-          <MultiSelect
-            label="League Selector"
-            className="multi-select"
-            onChange={handleOnchange}
+        <View gridArea="leagueSelect" width="70%">
+          <Select 
             options={options}
-            defaultValue="39"
+            isMulti
+            onChange={handleOnchange}
+            className="basic-multi-select"
+            classNamePrefix="select"
+            components={animatedComponents}
+            closeMenuOnSelect={false}
           />
         </View>
         <View gridArea="button">

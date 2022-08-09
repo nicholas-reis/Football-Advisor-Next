@@ -8,6 +8,7 @@ import {
     Cell
   } from "@adobe/react-spectrum";
 import { timeZones } from "./utils.js";
+import styles from "../styles/Home.module.css";
 
 export const FixtureTable = ( {footballData} ) => {
     let columns = [
@@ -63,6 +64,7 @@ export const FixtureTable = ( {footballData} ) => {
         onSelectionChange={setSelectedKeys}
         density="spacious"
         disabledKeys={disabledFixtures}
+        height="size-6000"
         // onAction can be used to take the user to fixture-specific pages
         // onAction={(key) => alert(`Opening item ${key}...`)}
       >
@@ -79,7 +81,7 @@ export const FixtureTable = ( {footballData} ) => {
         </TableHeader>
         <TableBody items={rows}>
           {(item) => (
-            <Row>
+            <Row >
               {(columnKey) => <Cell>{  
                 columnKey === 'homelogo' || columnKey === 'awaylogo' || columnKey === 'leaguelogo' ?
                 <img
