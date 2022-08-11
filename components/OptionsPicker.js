@@ -6,8 +6,29 @@ import { today } from "@internationalized/date";
 import Select from "react-select";
 import makeAnimated from 'react-select/animated';
 
+const customStyles = {
+  control: (base, state) => ({
+    ...base,
+    background: "black",
+    borderColor: "#505152",
+    boxShadow: state.isFocused ? null : null,
+    "&:hover": {
+      borderColor: "#696a6b"
+    }
+  }),
+  menu: (base) => ({
+    ...base,
+    background: "black"
+  })
+};
+
 export const OptionsPicker = () => {
   const options = [
+    { label: "Premier League (England)", value: "39" },
+    { label: "La Liga (Spain)", value: "140" },
+    { label: "Bundesliga (Germany)", value: "78" },
+    { label: "Ligue 1 (France)", value: "61" },
+    { label: "Serie A (Italy)", value: "135" },
     { label: "Bundesliga (Austria)", value: "218" },
     { label: "Jupiler Pro League (Belgium)", value: "144" },
     { label: "Challenger Pro League (Belgium)", value: "145" },
@@ -15,21 +36,17 @@ export const OptionsPicker = () => {
     { label: "HNL (Croatia)", value: "210" },
     { label: "Czech Liga (Czech-Republic)", value: "345" },
     { label: "Superliga (Denmark)", value: "119" },
-    { label: "Premier League (England)", value: "39" },
     { label: "Championship (England)", value: "40" },
     { label: "League One (England)", value: "41" },
     { label: "League Two (England)", value: "42" },
     { label: "Meistriliiga (Estonia)", value: "329" },
     { label: "Veikkausliiga (Finland)", value: "244" },
-    { label: "Ligue 1 (France)", value: "61" },
     { label: "Ligue 2 (France)", value: "62" },
     { label: "National 1 (France)", value: "63" },
-    { label: "Bundesliga (Germany)", value: "78" },
     { label: "2. Bundesliga (Germany)", value: "79" },
     { label: "3. Liga (Germany)", value: "80" },
     { label: "Super League 1 (Greece)", value: "197" },
     { label: "NB I (Hungary)", value: "271" },
-    { label: "Serie A (Italy)", value: "135" },
     { label: "Serie B (Italy)", value: "136" },
     { label: "Virsliga (Latvia)", value: "365" },
     { label: "A Lyga (Lithuania)", value: "362" },
@@ -46,7 +63,6 @@ export const OptionsPicker = () => {
     { label: "Championship (Scotland)", value: "180" },
     { label: "Super Liga (Slovakia)", value: "332" },
     { label: "1. SNL (Slovenia)", value: "373" },
-    { label: "La Liga (Spain)", value: "140" },
     { label: "Segunda División (Spain)", value: "141" },
     { label: "Allsvenskan (Sweden)", value: "113" },
     { label: "Super League (Switzerland)", value: "207" },
@@ -101,11 +117,13 @@ export const OptionsPicker = () => {
             classNamePrefix="select"
             components={animatedComponents}
             closeMenuOnSelect={false}
+            styles={customStyles}
           />
         </View>
         <View gridArea="button">
           <Button
-            variant="cta"
+            variant="primary"
+            width="200px"
             onPress={() => {
               router.push(
                 `/?startDate=${range.start.toString()}&endDate=${range.end.toString()}&leagueArr=${leagueArr}`

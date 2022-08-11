@@ -97,7 +97,7 @@ export async function getServerSideProps({
 export default function Home({ footballData }) {
   return (
     <SSRProvider>
-      <Provider theme={defaultTheme}>
+      <Provider theme={defaultTheme} colorScheme="dark">
         <div className={styles.container}>
           <Head>
             <title>Football Advisor</title>
