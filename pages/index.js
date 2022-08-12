@@ -15,18 +15,19 @@ import clientPromise from "../mongodb";
 import { OptionsPicker } from "../components/OptionsPicker";
 import { timeZones } from "../components/utils.js";
 import { FixtureTable } from "../components/FixtureTable";
+import { Quicksort } from "../components/Quicksort";
 
-function sortDates(array, fixture, date) {
+function findFixtureRange(array, date) {
   var low = 0,
-    high = array.length;
+    high = array.dataSet.length;
 
   while (low < high) {
     var mid = (low + high) >>> 1;
-    var tempDate = new Date(array[mid].fixture.date);
+    var tempDate = new Date(array.dataSet[mid].fixture.date);
     if (tempDate < date) low = mid + 1;
     else high = mid;
   }
-  array.splice(low, 0, fixture);
+  return low;
 }
 
 export async function getServerSideProps({
@@ -76,16 +77,15 @@ export async function getServerSideProps({
   let footballData = [];
   let leagueStartDate = new Date(startDate);
   let leagueEndDate = new Date(endDate);
+
   for (let i = 0; i < rawData.length; i++) {
-    for (let j = 0; j < rawData[i].dataSet.length; j++) {
-      let tempDate = new Date(rawData[i].dataSet[j].fixture.date);
-      if (
-        tempDate.getTime() >= leagueStartDate.getTime() &&
-        tempDate.getTime() <= leagueEndDate.getTime()
-      )
-        sortDates(footballData, rawData[i].dataSet[j], tempDate);
+    let startingFixture = findFixtureRange(rawData[i], leagueStartDate);
+    let endingFixture = findFixtureRange(rawData[i], leagueEndDate);
+    for (let j = startingFixture; j < endingFixture; j++) {
+      footballData.push(rawData[i].dataSet[j]);
     }
   }
+  Quicksort(footballData, 0, footballData.length - 1);
 
   return {
     props: {
