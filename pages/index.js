@@ -30,6 +30,21 @@ function findFixtureRange(array, date) {
   return low;
 }
 
+function sortByDates(fixtureArray, fixture, venueArray) {
+  var low = 0,
+    high = fixtureArray.length,
+    date = new Date(fixture.fixture.date);
+
+  while (low < high) {
+    var mid = (low + high) >>> 1;
+    var tempDate = new Date(fixtureArray[mid].fixture.date);
+    if (tempDate < date) low = mid + 1;
+    else high = mid;
+  }
+  fixtureArray.splice(low, 0, fixture);
+  venueArray.splice(low, 0, fixture.fixture.venue.id);
+}
+
 export async function getServerSideProps({
   query: {
     startDate = today(),
@@ -75,6 +90,7 @@ export async function getServerSideProps({
     .toArray();
 
   let footballData = [];
+  let venueArray = [];
   let leagueStartDate = new Date(startDate);
   let leagueEndDate = new Date(endDate);
 
@@ -82,19 +98,37 @@ export async function getServerSideProps({
     let startingFixture = findFixtureRange(rawData[i], leagueStartDate);
     let endingFixture = findFixtureRange(rawData[i], leagueEndDate);
     for (let j = startingFixture; j < endingFixture; j++) {
-      footballData.push(rawData[i].dataSet[j]);
+      sortByDates(footballData, rawData[i].dataSet[j], venueArray);
     }
   }
-  Quicksort(footballData, 0, footballData.length - 1);
+
+  //console.log(venueArray);
+  
+  var query = [
+    {$match: {"id": {$in: venueArray}}},
+    {$addFields: {"__venueData": {$indexOfArray: [venueArray, "$id" ]}}},
+    {$sort: {"__venueData": 1}}
+   ];
+
+  const venues = await db.collection("top_venues").aggregate( query ).toArray();
+  
+  /*
+  for (let i = 0; i < venues.length; i++) {
+    console.log(venues[i].id);
+  }
+  */
+  
+  let venueData = JSON.stringify(venues);
 
   return {
     props: {
-      footballData
+      footballData,
+      venueData
     }
   };
 }
 
-export default function Home({ footballData }) {
+export default function Home({ footballData, venueData }) {
   return (
     <SSRProvider>
       <Provider theme={defaultTheme} colorScheme="dark">
@@ -111,7 +145,7 @@ export default function Home({ footballData }) {
             <div className={styles.pickerGrid}>
               <OptionsPicker />
 
-              <FixtureTable footballData={footballData}/>
+              <FixtureTable footballData={footballData} venueData={venueData}/>
 
             </div>
           </main>

@@ -10,7 +10,34 @@ import {
 import { timeZones } from "./utils.js";
 import styles from "../styles/Home.module.css";
 
-export const FixtureTable = ( {footballData} ) => {
+const isWatchable = (fixture1, fixture2) => {
+  let hours = 3;
+  let delta = hours * 3600 * 1000; // converting to ms
+  let fixture1Date = new Date(fixture1.fixture.date);
+  let fixture2Date = new Date(fixture2.fixture.date);
+  console.log("Team 1: " + fixture1.teams.home.name + "Team 2: " + fixture1.teams.away.name);
+  console.log("Time Diff: " + (fixture1Date.getTime() - fixture2Date.getTime()));
+  console.log("Delta: " + delta);
+  if (Math.abs(fixture1Date.getTime() - fixture2Date.getTime()) >= delta)
+    return true;
+  return false;
+}
+
+const disableFixtures = (fixtureArray, selectedFixtureIndex, venueData, disabledSet) => {
+  let selectedStadiumId = fixtureArray[selectedFixtureIndex].fixture.venue.id;
+  
+  console.clear();
+  for (let i = 0; i < fixtureArray.length; i++) {
+    if (i !== selectedFixtureIndex) {
+      if ((isWatchable(fixtureArray[i], fixtureArray[selectedFixtureIndex])) === false) {
+        disabledSet = disabledSet.add(i);
+      }
+    }
+  }
+  return disabledSet;
+}
+
+export const FixtureTable = ( { footballData, venueData } ) => {
     let columns = [
       { name: '', uid: 'homelogo', width: "5%", align: "center" },
       { name: 'Home Team', uid: 'hometeam', width: "10%", align: "center" },
@@ -44,16 +71,18 @@ export const FixtureTable = ( {footballData} ) => {
     }
 
     let [selectedKeys, setSelectedKeys] = useState(new Set([]));
-    let [disabledFixtures, setDisabledFixtures] = useState([]);
+    let [disabledFixtures, setDisabledFixtures] = useState(new Set([]));
 
     const obj = {1: [3, 4, 5], 2: [6, 7, 8]}; // Replace with calculated disabled games
+    let venues = JSON.parse(venueData);
 
     useEffect(() => {
-      let disable = [];
-      for (const element of selectedKeys) {
-        disable = disable.concat(obj[element]);
+      let disabledSet = new Set([]);
+      //console.log(selectedKeys);
+      for (const selectedFixture of selectedKeys) {
+        disabledSet = disableFixtures(footballData, selectedFixture, venueData, disabledSet);
       }
-      setDisabledFixtures(disable);
+      setDisabledFixtures(disabledSet);
     }, [selectedKeys]);
   
     return (
