@@ -10,27 +10,38 @@ import {
 import { timeZones } from "./utils.js";
 import styles from "../styles/Home.module.css";
 
-const isWatchable = (fixture1, fixture2) => {
-  let hours = 3;
-  let delta = hours * 3600 * 1000; // converting to ms
+const isWatchable = (fixture1, fixture2, driveTimeSeconds) => {
+  let buffer = 2.5 * 3600 * 1000;
+  let delta = (driveTimeSeconds * 1000) + buffer;
   let fixture1Date = new Date(fixture1.fixture.date);
   let fixture2Date = new Date(fixture2.fixture.date);
-  console.log("Team 1: " + fixture1.teams.home.name + "Team 2: " + fixture1.teams.away.name);
-  console.log("Time Diff: " + (fixture1Date.getTime() - fixture2Date.getTime()));
-  console.log("Delta: " + delta);
   if (Math.abs(fixture1Date.getTime() - fixture2Date.getTime()) >= delta)
     return true;
   return false;
 }
 
+const getVenueObj = (selectedVenueId, venueData) => {
+  for (let i = 0; i < venueData.length; i++) {
+    if (venueData[i].id === selectedVenueId) {
+      return venueData[i];
+    }
+  }
+}
+
 const disableFixtures = (fixtureArray, selectedFixtureIndex, venueData, disabledSet) => {
-  let selectedStadiumId = fixtureArray[selectedFixtureIndex].fixture.venue.id;
-  
-  console.clear();
+  let selectedVenueId = fixtureArray[selectedFixtureIndex].fixture.venue.id;
+  let selectedVenueObj = getVenueObj(selectedVenueId, venueData);
+
   for (let i = 0; i < fixtureArray.length; i++) {
     if (i !== selectedFixtureIndex) {
-      if ((isWatchable(fixtureArray[i], fixtureArray[selectedFixtureIndex])) === false) {
-        disabledSet = disabledSet.add(i);
+      for (let j = 0; j < selectedVenueObj.directions.length; j++) {
+        if (selectedVenueObj.directions[j] !== null) {
+          if (fixtureArray[i].fixture.venue.id === selectedVenueObj.directions[j].destinationVenueId) {
+            if ((isWatchable(fixtureArray[i], fixtureArray[selectedFixtureIndex], selectedVenueObj.directions[j].drive.time)) === false) {
+              disabledSet = disabledSet.add(i);
+            }
+          }
+        }
       }
     }
   }
@@ -80,7 +91,7 @@ export const FixtureTable = ( { footballData, venueData } ) => {
       let disabledSet = new Set([]);
       //console.log(selectedKeys);
       for (const selectedFixture of selectedKeys) {
-        disabledSet = disableFixtures(footballData, selectedFixture, venueData, disabledSet);
+        disabledSet = disableFixtures(footballData, selectedFixture, venues, disabledSet);
       }
       setDisabledFixtures(disabledSet);
     }, [selectedKeys]);
