@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@adobe/react-spectrum": "^3.19.0",
+    "@adobe/react-spectrum": "3.19.0",
     "axios": "^0.27.2",
     "fs": "^0.0.1-security",
     "mongodb": "^4.8.0",

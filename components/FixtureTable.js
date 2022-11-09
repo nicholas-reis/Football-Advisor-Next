@@ -126,7 +126,6 @@ export const FixtureTable = ( { footballData, venueData } ) => {
                 columnKey === 'homelogo' || columnKey === 'awaylogo' || columnKey === 'leaguelogo' ?
                 <img
                   src={item[columnKey]}
-                  layout="fixed"
                   height="45"
                   width="45"
                   alt="league logo"
