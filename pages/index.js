@@ -63,27 +63,6 @@ export async function getServerSideProps({
   const db = client.db("football_advisor");
   const coll = await db.collection("fixtures");
 
-  if ((await coll.find({ leagueName: leagueName }).count()) === 0) {
-    await fetch(url, options)
-      .then((res) => res.json())
-      .then((json) => {
-        console.log("Updating Database...");
-        console.log(json);
-        const record = {
-          leagueName: leagueName,
-          dataSet: json.response
-        };
-        async function insert() {
-          if ((await coll.find({ leagueName: leagueName }).count()) === 0) {
-            await coll.insert(record);
-          }
-        }
-        insert();
-        console.log("Updated.");
-      })
-      .catch((err) => console.error("error:" + err));
-  }
-
   const rawData = await db
     .collection("fixtures")
     .find({ leagueId: { $in: leagueArr } })
