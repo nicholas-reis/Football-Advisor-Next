@@ -14,7 +14,7 @@
 <hr>
 
 <!-- ABOUT THE PROJECT -->
-<h2 id="about-the-project"> About The Project</h2>
+<h2 id="about-the-project">About The Project</h2>
 
 <p align="justify"> 
   This project aims to provide football/soccer superfans with an application to quickly and easily plan their trips around European match schedules. Keeping track of matches across different soccer leagues, dates, and times can often be a difficult task for fans, especially those traveling from outside of Europe. The application will allow users to select matches they want to watch from any league, and will automatically deselect any games with conflicting times. In the future, a trip-planning feature will be added that can store these selections and form an itinerary with each game. This project is a work-in-process and will continue to be updated and improved going forward.
@@ -40,7 +40,7 @@ Follow the link in the top right of this Github page, or click [here](https://fo
 2. Select the soccer leagues you are willing/able to watch (multiple selections are allowed)
 3. Click on the "Submit" button
 4. The table will populate with all matches that are being played in that time frame. Select matches you are interested in, and any matches that have conflicting times will be grayed out.
-5. (To be implemented) Once you have chosen all games you are interested in, click on the "Generate Itinerary" button to be given a possible trip itinerary.
+5. (To be implemented) Once you have chosen all games you are interested in, click on the "Itinerary" tab to view a possible trip itinerary.
 
 <hr>
 
