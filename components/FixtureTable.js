@@ -48,7 +48,7 @@ const disableFixtures = (fixtureArray, selectedFixtureIndex, venueData, disabled
   return disabledSet;
 }
 
-export const FixtureTable = ( { footballData, venueData } ) => {
+export const FixtureTable = ( { footballData, venueData, setProgressMsg, setSelectedFixtures } ) => {
     let columns = [
       { name: '', uid: 'homelogo', width: "5%", align: "center" },
       { name: 'Home Team', uid: 'hometeam', width: "10%", align: "center" },
@@ -79,6 +79,7 @@ export const FixtureTable = ( { footballData, venueData } ) => {
         leaguelogo: footballData[i].league.logo,
         leaguename: footballData[i].league.name + ` (${footballData[i].league.country})`
       });
+      //setProgressMsg("Retrieved " + (i+1) + " matches");
     }
 
     let [selectedKeys, setSelectedKeys] = useState(new Set([]));
@@ -89,10 +90,12 @@ export const FixtureTable = ( { footballData, venueData } ) => {
 
     useEffect(() => {
       let disabledSet = new Set([]);
-      //console.log(selectedKeys);
+      let selectedFeatures = [];
       for (const selectedFixture of selectedKeys) {
         disabledSet = disableFixtures(footballData, selectedFixture, venues, disabledSet);
+        selectedFeatures.push(footballData[selectedFixture]);
       }
+      setSelectedFixtures(selectedFeatures);
       setDisabledFixtures(disabledSet);
     }, [selectedKeys]);
   
@@ -104,7 +107,7 @@ export const FixtureTable = ( { footballData, venueData } ) => {
         onSelectionChange={setSelectedKeys}
         density="spacious"
         disabledKeys={disabledFixtures}
-        height="size-6000"
+        height='85vh'
         // onAction can be used to take the user to fixture-specific pages
         // onAction={(key) => alert(`Opening item ${key}...`)}
       >
