@@ -38,9 +38,9 @@
 Follow the link in the top right of this Github page, or click [here](https://football-advisor-next.vercel.app/). 
 1. Select a trip date range (when you will be traveling)
 2. Select the soccer leagues you are willing/able to watch (multiple selections are allowed)
-3. Click on the "Submit" button
+3. Click on the "Retrieve matches" button
 4. The table will populate with all matches that are being played in that time frame. Select matches you are interested in, and any matches that have conflicting times will be grayed out.
-5. (To be implemented) Once you have chosen all games you are interested in, click on the "Itinerary" tab to view a possible trip itinerary.
+5. Once you have chosen all games you are interested in, click on the "Itinerary" tab to view a possible trip itinerary.
 
 <hr>
 
