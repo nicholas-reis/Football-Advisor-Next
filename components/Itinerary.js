@@ -1,5 +1,6 @@
-import { React, useEffect, useState } from "react";
-import { Button, Cell, Column, Flex, Form, Grid, Heading, Item, Link, Row, StatusLight, Tabs, TabPanels, TabList, TableView, TableHeader, TableBody, TextField, Well, defaultTheme, Provider } from '@adobe/react-spectrum';
+import { React } from "react";
+import { Cell, Column, Row, TableView, TableHeader, TableBody } from '@adobe/react-spectrum';
+import { timeZones } from "./utils.js";
 
 
 export const Itinerary = ( { selectedFixtures } ) => {
@@ -18,12 +19,11 @@ export const Itinerary = ( { selectedFixtures } ) => {
     }
 
     let columns = [
-        {name: 'Match date', uid: 'date'},
-        {name: 'Home team', uid: 'homeTeam'},
-        {name: 'Away team', uid: 'awayTeam'},
-        {name: 'Stadium', uid: 'venueName'},
-        {name: 'City', uid: 'venueCity'},
-        {name: 'League', uid: 'leagueName'},
+        {name: 'Date (local time)', uid: 'date', width: "15%", align: "start"},
+        {name: 'Home team', uid: 'homeTeam', width: "12.5%", align: "start"},
+        {name: 'Away team', uid: 'awayTeam', width: "12.5%", align: "start"},
+        {name: 'Stadium', uid: 'venueName', width: "40%", align: "start"},
+        {name: 'League', uid: 'leagueName', width: "20%", align: "start"},
     ];
 
     let rows = [];
@@ -33,11 +33,19 @@ export const Itinerary = ( { selectedFixtures } ) => {
         let fixtureObj = {};
         fixtureObj.id = i;
         fixtureObj.fixture = fixture.fixture;
-        fixtureObj.date = new Date(fixture.date).toLocaleString(navigator.language, { dateStyle: 'full', timeStyle: 'medium'});
+        fixtureObj.date = new Date(fixture.date).toLocaleString(navigator.language, {
+            weekday: 'short',
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            //timeZoneName: 'short',
+            timeZone: timeZones[fixture.country] || "UTC"
+          });
         fixtureObj.homeTeam = fixture.homeTeam;
         fixtureObj.awayTeam = fixture.awayTeam;
-        fixtureObj.venueName = fixture.venueName;
-        fixtureObj.venueCity = fixture.venueCity + ' (' + fixture.country + ')';
+        fixtureObj.venueName = fixture.venueName + ' ' + fixture.venueCity + ' (' + fixture.country + ')';
         fixtureObj.leagueName = fixture.leagueName + ' - ' + fixture.leagueRound;
         rows.push(fixtureObj);
     }
@@ -53,10 +61,11 @@ export const Itinerary = ( { selectedFixtures } ) => {
                     {column => (
                         <Column
                             key={column.uid}
-                            align='start'>
+                            align={column.align}
+                            width={column.width}>
                             {column.name}
                         </Column>
-                        )}
+                    )}
                 </TableHeader>
 
                 <TableBody items={rows}>

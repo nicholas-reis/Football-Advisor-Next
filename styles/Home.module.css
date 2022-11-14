@@ -8,8 +8,8 @@
 }
 
 .title {
-  font-size: 1.2rem;
-  padding: 10px;
+  font-size: 1.1rem;
+  padding: 10px 0px 0px 10px;
 }
 
 .pickerGrid {
@@ -23,16 +23,12 @@
 
 .progressSection {
   color: blue;
-  font-size: 1rem;
-  margin: 7%;
-}
-
-.generateItinerary {
-  margin: 3%;
+  font-size: 0.75rem;
+  margin: 8%;
 }
 
 .fixtureTable {
-  margin: 1%;
+  margin: 1.2%;
   min-width: 95%;
 }
 
@@ -44,7 +40,6 @@
   justify-content: center;
   align-items: center;
 }
-
 
 .grid {
   display: flex;

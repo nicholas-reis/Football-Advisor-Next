@@ -2,7 +2,7 @@ import styles from "../styles/Home.module.css";
 import { DateRangePicker, Button, Grid, View } from "@adobe/react-spectrum";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { today, parseDate } from "@internationalized/date";
+import { parseDate } from "@internationalized/date";
 import Select from "react-select";
 import makeAnimated from 'react-select/animated';
 import { leagueOptions } from "./utils";
@@ -31,6 +31,7 @@ export const OptionsPicker = ( { startDateIn, endDateIn, leagueArrIn, selectedMa
     start: parseDate(startDateIn),
     end:  parseDate(endDateIn)
   });
+  const [isRetrieveButtonDisabled, setIsRetrieveButtonDisabled] = useState(false);
 
   const router = useRouter();
   const animatedComponents = makeAnimated();
@@ -43,15 +44,26 @@ export const OptionsPicker = ( { startDateIn, endDateIn, leagueArrIn, selectedMa
     setLeagueArr(arr);
   }
 
-  /*
-  useEffect( () => {
-    let startDate = range.start;
-    let endDate = range.end;
-    router.push(
-      `/?startDate=${startDate}&endDate=${endDate}&leagueArr=${leagueArr}`
-    );
-  }, [ range, leagueArr ]);
-  */
+  useEffect(() => {
+    const handleRouteChange = (url, { shallow }) => {
+        setProgressMsg(`Retrieving match data...`);
+        setIsRetrieveButtonDisabled(true);
+    }
+
+    const handleRouteComplete = (url, { shallow }) => {
+      setProgressMsg(`Done retrieving data.`);
+      setIsRetrieveButtonDisabled(false);
+    }
+
+    router.events.on('routeChangeStart', handleRouteChange)
+    router.events.on('routeChangeComplete', handleRouteComplete)
+
+    // If the component is unmounted, unsubscribe
+    // from the event with the `off` method:
+    return () => {
+      router.events.off('routeChangeStart', handleRouteChange)
+    }
+  }, [])
 
   return (
     <div className={styles.optionsPicker}>
@@ -62,7 +74,7 @@ export const OptionsPicker = ( { startDateIn, endDateIn, leagueArrIn, selectedMa
         gap="size-250"
         justifyItems="left"
         margin="20px"
-        width="90%"
+        width="99%"
       >
         <View gridArea="dateRange">
           <DateRangePicker
@@ -90,6 +102,7 @@ export const OptionsPicker = ( { startDateIn, endDateIn, leagueArrIn, selectedMa
           <div className={styles.retrieveMatches}>
             <Button
               variant="primary"
+              isDisabled={isRetrieveButtonDisabled}
               width="200px"
               onPress={() => {
                 // setProgressMsg('Retrieving match data...');
@@ -98,7 +111,7 @@ export const OptionsPicker = ( { startDateIn, endDateIn, leagueArrIn, selectedMa
                 );
               }}
             >
-              Submit
+              Retrieve matches
             </Button>
           </div>
         </View>

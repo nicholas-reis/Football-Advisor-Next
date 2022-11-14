@@ -28,10 +28,10 @@ export async function getServerSideProps({
 }) {
 
   console.clear();
-  console.log('startDate: ' + startDate);
-  console.log('endDate: ' + endDate);
-  console.log('leagueArr: ' + leagueArr);
-  console.log('leagueOptions: ' + JSON.stringify(leagueOptions) + '\n');
+  console.log('getServerSideProps | startDate: ' + startDate);
+  console.log('getServerSideProps | endDate: ' + endDate);
+  console.log('getServerSideProps | leagueArr: ' + leagueArr);
+  console.log('getServerSideProps | leagueOptions: ' + JSON.stringify(leagueOptions) + '\n');
 
   if (typeof leagueArr === "string") {
     leagueArr = leagueArr.split(",");
@@ -105,10 +105,9 @@ export async function getServerSideProps({
 export default function Home({ footballData, venueData, startDate, endDate, leagueArr, selectedMatchesArr }) {
   const [selectedFixtures, setSelectedFixtures] = useState([]);
   const [progressMsg, setProgressMsg] = useState('');
-  console.log(startDate);
-  console.log(endDate);
-  console.log(leagueArr);
+  let [selectedKeys, setSelectedKeys] = useState(new Set([]));
 
+  
   return (
     <SSRProvider>
       <Provider theme={defaultTheme} colorScheme="light">
@@ -129,16 +128,15 @@ export default function Home({ footballData, venueData, startDate, endDate, leag
           <TabPanels>
             <Item key="FoR">
               <div className={styles.main}>
-
                 <Grid
-                  areas={['optionsPicker optionsPicker progressSection  generateItinerary',
+                  areas={['optionsPicker optionsPicker optionsPicker progressSection',
                           'fixtureTable fixtureTable fixtureTable fixtureTable',
-                          'itineraryPDF itineraryPDF footer footer']}
-                  columns={['1fr', '3fr', '1fr', '1fr']}
-                  rows={['3vh','auto','auto']}
+                          'footer footer footer footer']}
+                  columns={['1fr','1fr', '1fr', '1fr']}
+                  rows={['3vh','68vh','auto']}
                   height='95vh'
                   gap='size-250'
-                  margin='2vh'
+                  margin='1vh'
                 >
                   <View gridArea="optionsPicker">
                     <div className={styles.pickerGrid}>
@@ -163,8 +161,9 @@ export default function Home({ footballData, venueData, startDate, endDate, leag
                       <FixtureTable 
                         footballData={footballData} 
                         venueData={venueData}
-                        setProgressMsg={setProgressMsg}
                         setSelectedFixtures={setSelectedFixtures}
+                        selectedKeys={selectedKeys}
+                        setSelectedKeys={setSelectedKeys}
                         />
                     </div>
 
@@ -191,7 +190,7 @@ export default function Home({ footballData, venueData, startDate, endDate, leag
               </Item>
 
               <Item key="MaR">
-                <View gridArea="itineraryPDF">
+                <View gridArea="itinerary">
                   <Itinerary 
                     selectedFixtures={selectedFixtures}/>
                 </View>

@@ -8,7 +8,6 @@ import {
     Cell
   } from "@adobe/react-spectrum";
 import { timeZones } from "./utils.js";
-import styles from "../styles/Home.module.css";
 
 const isWatchable = (fixture1, fixture2, driveTimeSeconds) => {
   let buffer = 2.5 * 3600 * 1000;
@@ -48,17 +47,16 @@ const disableFixtures = (fixtureArray, selectedFixtureIndex, venueData, disabled
   return disabledSet;
 }
 
-export const FixtureTable = ( { footballData, venueData, setProgressMsg, setSelectedFixtures } ) => {
+export const FixtureTable = ( { footballData, venueData, setSelectedFixtures, selectedKeys, setSelectedKeys } ) => {
     let columns = [
-      { name: '', uid: 'homelogo', width: "5%", align: "center" },
-      { name: 'Home Team', uid: 'hometeam', width: "10%", align: "center" },
-      { name: '', uid: 'vs', width: "5%", align: "center" },
-      { name: 'Away Team', uid: 'awayteam', width: "10%", align: "center" },
-      { name: '', uid: 'awaylogo', width: "5%", align: "center" },
-      { name: 'Date', uid: 'date', width: "17%", align: "center" },
-      { name: 'Venue', uid: 'venue', width: "25%", align: "center" },
-      { name: '', uid: 'leaguelogo', width: "5%", align: "center" },
-      { name: 'League', uid: 'leaguename', width: "15%", align: "center" }
+      { name: '', uid: 'homelogo', width: "4%", align: "center" },
+      { name: 'Home Team', uid: 'hometeam', width: "13.5%", align: "start" },
+      { name: 'Away Team', uid: 'awayteam', width: "13.5%", align: "start" },
+      { name: '', uid: 'awaylogo', width: "4%", align: "center" },
+      { name: 'Date (local time)', uid: 'date', width: "17%", align: "start" },
+      { name: 'Stadium', uid: 'venue', width: "32%", align: "start" },
+      { name: '', uid: 'leaguelogo', width: "4%", align: "center" },
+      { name: 'League', uid: 'leaguename', width: "12%", align: "start" }
     ];
 
     let rows = [];
@@ -67,22 +65,24 @@ export const FixtureTable = ( { footballData, venueData, setProgressMsg, setSele
         id: i,
         homelogo: footballData[i].teams.home.logo,
         hometeam: footballData[i].teams.home.name,
-        vs: "vs",
         awayteam: footballData[i].teams.away.name,
         awaylogo: footballData[i].teams.away.logo,
-        date: new Date(footballData[i].fixture.date).toLocaleString("en-GB", {
-          dateStyle: "full",
-          timeStyle: "short",
+        date: new Date(footballData[i].fixture.date).toLocaleString(navigator.language, {
+          weekday: 'short',
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+          //timeZoneName: 'short',
           timeZone: timeZones[footballData[i].league.country] || "UTC"
         }),
-        venue: footballData[i].fixture.venue.name + ` (${footballData[i].fixture.venue.city})`,
+        venue: footballData[i].fixture.venue.name + ` (${footballData[i].fixture.venue.city}, ${footballData[i].league.country})`,
         leaguelogo: footballData[i].league.logo,
-        leaguename: footballData[i].league.name + ` (${footballData[i].league.country})`
+        leaguename: footballData[i].league.name
       });
-      //setProgressMsg("Retrieved " + (i+1) + " matches");
     }
 
-    let [selectedKeys, setSelectedKeys] = useState(new Set([]));
     let [disabledFixtures, setDisabledFixtures] = useState(new Set([]));
 
     const obj = {1: [3, 4, 5], 2: [6, 7, 8]}; // Replace with calculated disabled games
@@ -105,9 +105,10 @@ export const FixtureTable = ( { footballData, venueData, setProgressMsg, setSele
         selectionMode="multiple"
         selectedKeys={selectedKeys}
         onSelectionChange={setSelectedKeys}
-        density="spacious"
+        density="compact"
+        overflowMode="wrap"
         disabledKeys={disabledFixtures}
-        height='85vh'
+        height='70vh'
         // onAction can be used to take the user to fixture-specific pages
         // onAction={(key) => alert(`Opening item ${key}...`)}
       >
@@ -129,8 +130,8 @@ export const FixtureTable = ( { footballData, venueData, setProgressMsg, setSele
                 columnKey === 'homelogo' || columnKey === 'awaylogo' || columnKey === 'leaguelogo' ?
                 <img
                   src={item[columnKey]}
-                  height="45"
-                  width="45"
+                  height="25"
+                  width="25"
                   alt="league logo"
                 /> 
                 : item[columnKey]  }</Cell>}
